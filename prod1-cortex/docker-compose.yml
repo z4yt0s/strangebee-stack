@@ -14,7 +14,7 @@ services:
       - bootstrap.memory_lock=true
       - xpack.security.enabled=true
       - ELASTIC_PASSWORD=${elasticsearch_password} # Password for "elastic" default user
-      - ES_JAVA_OPTS=-Xms6G -Xmx6G
+      - ES_JAVA_OPTS=-Xms2G -Xmx2G
     volumes:
       - ./elasticsearch/data:/usr/share/elasticsearch/data
       - ./elasticsearch/logs:/usr/share/elasticsearch/logs
@@ -25,8 +25,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 7G
-          cpus: '4.000'
+          memory: 4G
+          cpus: '2.000'
     memswap_limit: 7G
     networks:
       - cortex-network
@@ -46,6 +46,7 @@ services:
 
   cortex:
     image: "thehiveproject/cortex:${cortex_image_version}"
+    privileged: true
     container_name: cortex
     hostname: cortex
     restart: unless-stopped
@@ -70,15 +71,15 @@ services:
     deploy:
       resources:
         limits:
-          memory: 5G
-          cpus: '4.000'
+          memory: 2G
+          cpus: '2.000'
     memswap_limit: 5G
     networks:
       - cortex-network
     # ports:
     #   - '0.0.0.0:9001:9001'
     healthcheck:
-      test: ["CMD-SHELL", "curl -s -f cortex:9001/cortex/api/status || exit 1"]
+      test: ["CMD-SHELL", "curl -s -f cortex:9001/api/status || exit 1"]
       start_period: 40s
       interval: 10s
       timeout: 1s
